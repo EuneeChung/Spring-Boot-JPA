@@ -7,6 +7,8 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static javax.persistence.FetchType.*;
+
 @Entity
 @Getter
 @Setter
@@ -30,7 +32,7 @@ public class Category {
 
 
     // 카테고리는 계층형 구조 -> 상위, 하위를 알 수 있어야 함.
-    @ManyToOne
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name="parent_id")
     private Category parent;
 
