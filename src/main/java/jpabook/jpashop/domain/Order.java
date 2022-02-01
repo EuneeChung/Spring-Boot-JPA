@@ -29,6 +29,8 @@ public class Order {
     // 주로, FK와 가까운 친구로 설정한다
     // 주인은 그대로 두고, 반대 주인이 아닌 친구 설정을 해주어야 한다.
 
+
+    // 엔티티 설계시 주의점 2. 모든 연관관계는 지연로딩으로 설정
     // @ManyToOne(fetch = FetchType.EAGER)
     // Order를 조회할 때, Join해서 member를 한방에 같이 조회
     // JPQL select o from order o; => SQL select * from order 로 번역
@@ -40,15 +42,25 @@ public class Order {
 
     // @XtoOne (@OneToOne,@ManyToOne) 관계는 기본적으로 EAGER 즉시로딩 -> 직접 지연로딩으로 설정해야 한다.
     // toOne의 fetch 전략은 EAGER
-    // @OneToX의 기본 fetch 전략은 LAZY 두개가 달라유
+    // @OneToX의 기본 fetch 전략은  LAZY 두개가 달라유
 
     // 하튼 정리하자면, @XtoOne (@OneToOne,@ManyToOne) 관계는 다 찾아서 직접 지연로딩으로 설정해야 한다.
     // 지연로딩 LAZY로 안 바꾸면 연관된 쿼리가 다 날라가유 ~
 
-    @OneToMany(mappedBy = "order")
-    private List<OrderItem> orderItmes = new ArrayList<>();
+    @OneToMany(mappedBy = "order", cascade =CascadeType.ALL)
+    private List<OrderItem> orderItems = new ArrayList<>();
 
-    @OneToOne(fetch = LAZY)
+    // persist(orderItemA)
+    // persist(orderItemB)
+    // persist(orderItemC)
+    // persist(order)
+    // 로 해야 하는거
+
+    // @(cascade =CascadeType.ALL) 설정이 되어있다면 persist를 전파해줘서
+    // persist(order) 한 줄이면 돼유
+
+
+    @OneToOne(fetch = LAZY,cascade = CascadeType.ALL)
     @JoinColumn(name ="delivery_id")
     private Delivery delivery;
     // 일대일 관계 FK 를 어디다 둘것인가?!
@@ -62,4 +74,19 @@ public class Order {
 
     @Enumerated(EnumType.STRING)
     private OrderStatus status; // 주문 상태 [ORDER , CANCEL]
+
+    // 엔티티 설계시 4. 연관관계 편의 메소드 ==
+    // 양방향일때 양쪽을 원자적으로 묶어서 셋팅하기 위해 사용
+    public void setMember(Member member){
+        this.member=member;
+        member.getOrders().add(this);
+    }
+    public void addOrderItem(OrderItem orderItem){
+        orderItems.add(orderItem);
+        orderItem.setOrder(this);
+    }
+    public void setDelivery(Delivery delivery){
+        this.delivery = delivery;
+        delivery.setOrder(this);
+    }
 }

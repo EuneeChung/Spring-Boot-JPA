@@ -10,11 +10,9 @@ import java.util.List;
 import static javax.persistence.FetchType.*;
 
 @Entity
-@Getter
-@Setter
+@Getter @Setter
 public class Category {
-    @Id
-    @GeneratedValue
+    @Id @GeneratedValue
     @Column(name = "category_id")
     private Long id;
 
@@ -39,4 +37,10 @@ public class Category {
     @OneToMany(mappedBy = "parent")
     private List<Category> child = new ArrayList<>();
     // 셀프로 양방향 연관관계 => 이름만 같을 뿐이지, 다른 Entity와 맵핑하는 것과 같습니다
+
+    // 엔티티 설계시 4. 연관관계 편의 메소드 ==
+    public void addChildCategory(Category child){
+        this.child.add(child);
+        child.setParent(this);
+    }
 }

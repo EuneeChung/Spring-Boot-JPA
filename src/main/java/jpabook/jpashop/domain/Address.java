@@ -7,6 +7,7 @@ import javax.persistence.Embeddable;
 @Embeddable //어딘가에 내장될 수 있다.
 @Getter
 public class Address {
+    // 엔티티 설계시 주의점 1. 엔티티에는 가급적 Setter를 사용하지 말자
     // 값 타임 => 변경되면 안 된다. immutable
     // 생성할 때만, 값이 셋팅되게 setter 제공 x 하는게 좋은 설계
     // JPA가 생성할때, 리플렉션이나 등등의 기술 스택을 써야 하는데
